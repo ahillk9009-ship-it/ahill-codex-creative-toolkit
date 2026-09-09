@@ -1,10 +1,12 @@
 # Ahill Codex Creative Toolkit
 
-**Codex로 영상·디자인 작업을 이어 가기 위한 설치 도구, 로컬 기억, Adobe 연결 코드 모음.**
+**[한국어](README.md) | [English](README.en.md)**
+
+**작업 기억·Adobe 연동·스킬 재사용을 위한 Codex 영상·디자인 제작 환경.**
 
 개인 Windows 제작 환경에서 사용한 구성을 다른 사람이 자기 PC에 적용할 수 있도록 정리했습니다. 코드와 작업 지침을 설치하고, 필요한 외부 도구를 선택해 연결할 수 있습니다.
 
-> 한국어 안내 · Windows 우선 · Python 3.11+ · 핵심 기능은 API 키 없이 실행
+> 한국어·영어 안내 · Windows 우선 · Python 3.11+ · 핵심 기능은 API 키 없이 실행
 
 ## 무엇이 들어 있나요?
 
@@ -23,7 +25,7 @@
 Codex나 Adobe 자체, 구독, 계정 연결, 고객 미디어는 포함하지 않습니다.
 이 저장소는 독립 프로젝트이며 OpenAI·Adobe의 공식 제품이 아닙니다.
 
-## 3분 시작
+## 빠른 시작
 
 1. [Python 3.11 이상](https://www.python.org/downloads/)을 설치합니다.
 2. 이 저장소에서 **Code → Download ZIP**을 눌러 압축을 풉니다.

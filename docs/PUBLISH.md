@@ -1,5 +1,7 @@
 # GitHub 공유
 
+[한국어](PUBLISH.md) | [English](en/PUBLISH.md) | [README](../README.md)
+
 ## 기존 저장소에 웹으로 올리기
 
 1. 생성한 공유용 ZIP을 별도 폴더에 풉니다.
@@ -25,7 +27,7 @@ git clone <YOUR_REPOSITORY_URL> ahill-repo
 cd ahill-repo
 python toolkit.py check-release
 git status --short
-git add README.md LICENSE THIRD_PARTY_NOTICES.md toolkit.py setup.ps1 release-files.json .gitignore .gitattributes .github adobe memory skills templates catalog docs tests licenses
+git add README.md README.en.md LICENSE THIRD_PARTY_NOTICES.md toolkit.py setup.ps1 release-files.json .gitignore .gitattributes .github adobe memory skills templates catalog docs tests licenses
 git diff --cached --stat
 git commit -m "Add portable Codex creative toolkit"
 git push

@@ -1,5 +1,7 @@
 # 검증 범위
 
+[한국어](VALIDATION.md) | [English](en/VALIDATION.md) | [README](../README.md)
+
 이 문서는 공유본 코드의 재현 가능한 검사와 Adobe 앱에서 필요한 검사를 구분합니다.
 
 ## 공유본 작성 시 확인한 결과
@@ -50,4 +52,4 @@ Node 검사는 실제 Adobe 앱 대신 가짜 패널과 로컬 임시 포트를 
 - 앱을 재시작한 뒤 페어링과 재접속이 유지되는지.
 - 결과 영상·이미지를 직접 확인하고 필요한 오디오를 청취했는지.
 
-기존 제작 PC에서 성공했던 기록만으로 다른 사용자의 환경도 검증됐다고 표시하지 않습니다. CI 워크플로를 제공하지만 GitHub에 올리기 전에는 원격 CI가 실행된 것이 아닙니다.
+기존 제작 PC에서 성공했던 기록만으로 다른 사용자의 환경도 검증됐다고 표시하지 않습니다. CI는 Windows와 Ubuntu를 대상으로 하며, 사용하는 커밋의 결과는 [GitHub Actions](https://github.com/ahillk9009-ship-it/ahill-codex-creative-toolkit/actions/workflows/test.yml)에서 확인합니다.

@@ -1,5 +1,7 @@
 # 로컬 작업 기억
 
+[한국어](MEMORY.md) | [English](en/MEMORY.md) | [README](../README.md)
+
 ## 기본 모드
 
 기본 모드는 Python 표준 라이브러리만 사용합니다. 키워드 검색, 프로젝트 구분, JSON 내보내기, 수정 이력, SQLite 백업이 작동합니다. API 키나 모델 다운로드가 필요하지 않습니다.

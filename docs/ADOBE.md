@@ -1,5 +1,7 @@
 # Adobe 연결
 
+[한국어](ADOBE.md) | [English](en/ADOBE.md) | [README](../README.md)
+
 앱 설치, 패널 설치, MCP 등록, 호스트 연결, 실제 편집 성공은 각각 확인해야 합니다. 이 도구는 Adobe 구독이나 설치 파일을 제공하지 않습니다.
 
 ## Premiere Pro 1.14.5 공유 어댑터

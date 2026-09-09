@@ -1,5 +1,7 @@
 # 자료 조사와 브라우저
 
+[한국어](RESEARCH.md) | [English](en/RESEARCH.md) | [README](../README.md)
+
 외부 도구는 원하는 것만 설치합니다. 검색 쿼리와 방문한 사이트는 해당 서비스로 전달됩니다. 로컬 작업 기억의 저장·검색과 외부 자료 조사를 구분합니다.
 
 ## Agent Reach

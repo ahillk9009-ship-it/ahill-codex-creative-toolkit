@@ -27,7 +27,9 @@ class ToolkitTests(unittest.TestCase):
         second = toolkit.install(target, skills, "full")
         self.assertEqual(second["changed"], 0)
         text = (skills / "ahill-work-memory/SKILL.md").read_text(encoding="utf-8")
-        self.assertIn(target.as_posix(), text)
+        # Windows runners may expose TEMP through an 8.3 alias (RUNNER~1).
+        # Installation intentionally writes the resolved, equivalent long path.
+        self.assertIn(target.resolve().as_posix(), text)
         self.assertNotIn("{{TOOLKIT_ROOT}}", text)
         self.assertFalse((target / "private").exists())
 

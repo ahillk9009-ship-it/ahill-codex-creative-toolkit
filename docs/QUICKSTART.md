@@ -1,5 +1,7 @@
 # 설치와 첫 사용
 
+[한국어](QUICKSTART.md) | [English](en/QUICKSTART.md) | [README](../README.md)
+
 ## 준비
 
 - 핵심 기능: Python 3.11 이상. Windows 예시는 `python`, Linux/macOS는 필요하면 `python3`를 사용합니다.
