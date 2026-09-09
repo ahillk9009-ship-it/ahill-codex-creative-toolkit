@@ -1,0 +1,651 @@
+{
+  "observed": "2026-09-09",
+  "scope": "user and project skill directories; plugin caches and bundled runtime omitted",
+  "skills": [
+    {
+      "name": "add-ai-captions",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "adobe-editing-local",
+      "scope": "user-codex",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "aftereffects-cli",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "aftereffects-declarative",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "agent-browser",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "agent-reach",
+      "scope": "user-codex",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "android-device-automation",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "apple-design",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "audio-editing",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "beauty-sns-viral",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "better-layout",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "better-typography",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "brandkit",
+      "scope": "project",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "content-creation",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "content-strategy-sms",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "creative-mechanics",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "design-taste-frontend",
+      "scope": "project",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "design-taste-frontend-v1",
+      "scope": "project",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "figma",
+      "scope": "user-codex",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "figma-create-design-system-rules",
+      "scope": "user-codex",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "figma-generate-design",
+      "scope": "user-codex",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "figma-implement-design",
+      "scope": "user-codex",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "figma-use",
+      "scope": "user-codex",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "find-skills",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "full-output-enforcement",
+      "scope": "project",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gpt-taste",
+      "scope": "project",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "graphic-art-direction",
+      "scope": "user-codex",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "graphify",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-add-tests",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-ai-integration-phase",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-audit-fix",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-audit-milestone",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-audit-uat",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-autonomous",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-capture",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-cleanup",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-code-review",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-complete-milestone",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-config",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-debug",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-discuss-phase",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-docs-update",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-eval-review",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-execute-phase",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-explore",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-extract-learnings",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-fast",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-forensics",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-graphify",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-health",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-help",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-import",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-inbox",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-ingest-docs",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-manager",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-map-codebase",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-mempalace-capture",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-mempalace-recall",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-milestone-summary",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-mvp-phase",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-new-milestone",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-new-project",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-next",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-ns-context",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-ns-ideate",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-ns-manage",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-ns-project",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-ns-review",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-ns-workflow",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-onboard",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-pause-work",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-phase",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-plan-phase",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-plan-review-convergence",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-pr-branch",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-profile-user",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-progress",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-quick",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-resume-work",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-review",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-review-backlog",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-secure-phase",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-settings",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-ship",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-sketch",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-spec-phase",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-spike",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-stats",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-surface",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-thread",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-ui-phase",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-ui-review",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-ultraplan-phase",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-undo",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-update",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-validate-phase",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-verify-work",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-workspace",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "gsd-workstreams",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "high-end-visual-design",
+      "scope": "project",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "image-to-code",
+      "scope": "project",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "imagegen-frontend-mobile",
+      "scope": "project",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "imagegen-frontend-web",
+      "scope": "project",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "industrial-brutalist-ui",
+      "scope": "project",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "lachal-youtube-editing",
+      "scope": "project",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "mcp-builder",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "mem0",
+      "scope": "user-codex",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "mem0-cli",
+      "scope": "user-codex",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "minimalist-ui",
+      "scope": "project",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "motion-design",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "notion-design",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "openchatcut",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "playwright-interactive",
+      "scope": "user-codex",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "redesign-existing-projects",
+      "scope": "project",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "screenshot",
+      "scope": "user-codex",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "shorts-reference-collector",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "sound-design-film",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "stitch-design-taste",
+      "scope": "project",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "storytelling",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "subtitle-design",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "talking-head-podcast-recut",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "task-observer",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "video-edit",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "video-editor",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "video-effects-reference",
+      "scope": "user-codex",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "video-frames",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "video-motion-graphics",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "voice-audio-engineer",
+      "scope": "user-shared",
+      "status": "file-present; capability-not-tested"
+    },
+    {
+      "name": "work-memory-research",
+      "scope": "user-codex",
+      "status": "file-present; capability-not-tested"
+    }
+  ]
+}

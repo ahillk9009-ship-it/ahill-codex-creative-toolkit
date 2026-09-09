@@ -1,0 +1,29 @@
+name: Test portable toolkit
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: adobe/premiere/package-lock.json
+      - run: python -m unittest discover -s tests -v
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: adobe/premiere
+      - run: npm test
+        working-directory: adobe/premiere
+      - run: python toolkit.py check-release
+      - run: python toolkit.py release --output dist/codex-creative-toolkit.zip

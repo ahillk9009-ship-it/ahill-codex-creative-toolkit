@@ -1,0 +1,26 @@
+{
+  "component": "photoshop",
+  "version": "2.0.1",
+  "files": [
+    {
+      "path": "main.js",
+      "before_sha256": "cde8580941a46cef218fd8a8da74d047f8400d2f620da6944efa1bf3c3e301db",
+      "after_sha256": "ea30764c48c6557ad935a62759d0fa03e98ff49be814ff69cad8be16d4562dfc"
+    },
+    {
+      "path": "lib/bridge.js",
+      "before_sha256": "e242b225b60f19796e6a4d02291153e8d299da36125bd88b47fd714608d16afe",
+      "after_sha256": "5b35e5bc955321816da0ab2de4948d2a52e2d8a22aaa64e983d006154d533fb5"
+    },
+    {
+      "path": "lib/hmac-compat.js",
+      "before_sha256": null,
+      "after_sha256": "be0daae5dbf02094883a161a1826b71033e3cca9a30a2900bbf4ef4ee36a0184"
+    },
+    {
+      "path": "lib/NOBLE-HASHES-LICENSE.txt",
+      "before_sha256": null,
+      "after_sha256": "4f221aee6e072336700c408c68ab3b96a3fc09f6aebe6f48f1bd99e5ef13faec"
+    }
+  ]
+}

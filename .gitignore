@@ -1,0 +1,34 @@
+# Personal runtime and generated artifacts
+private/
+.runtime/
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+installation.json
+dist/
+*.zip
+*.log
+*.bak
+*.sqlite3*
+*.db
+work-memory/
+vectors/
+vectors-archived-*/
+backups/
+.ahill-backup-*/
+*.ahill-backup-*
+# Media and editable customer projects
+*.mp4
+*.mov
+*.wav
+*.psd
+*.prproj
+*.aep
+*.ccx
+auth.json
+credentials.json
+memories.json

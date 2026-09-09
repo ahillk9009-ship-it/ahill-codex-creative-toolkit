@@ -1,0 +1,128 @@
+[
+  {
+    "name": "Agent Reach",
+    "group": "research",
+    "source": "https://github.com/Panniantong/Agent-Reach",
+    "observed_version": "1.5.0",
+    "delivery": "upstream-install",
+    "note": "로컬 설치 기록에서 확인. 플랫폼별 계정과 접근 권한은 별도.",
+    "commands": [
+      "uv tool install --python 3.12 https://github.com/Panniantong/Agent-Reach/archive/f65526cbaaad3879473acc1ba6dbefd195caf2be.zip",
+      "agent-reach doctor --json"
+    ]
+  },
+  {
+    "name": "agent-browser",
+    "group": "research",
+    "source": "https://github.com/vercel-labs/agent-browser",
+    "observed_version": "0.37.1",
+    "delivery": "upstream-install",
+    "commands": [
+      "npm install -g agent-browser@0.37.1",
+      "agent-browser skills get core",
+      "agent-browser install"
+    ]
+  },
+  {
+    "name": "Exa via mcporter",
+    "group": "research",
+    "source": "https://github.com/steipete/mcporter",
+    "delivery": "upstream-install",
+    "note": "Exa 검색은 쿼리를 외부 서비스에 전송한다. 로컬 전용 기억 저장과 구분.",
+    "commands": [
+      "npm install -g mcporter@0.13.10",
+      "mcporter --config ./templates/mcporter.example.json call exa.web_search_exa query=<public-query> numResults=5"
+    ],
+    "observed_version": "0.13.10"
+  },
+  {
+    "name": "Premiere Pro MCP + shared UXP",
+    "group": "adobe",
+    "source": "https://github.com/leancoderkavy/premiere-pro-mcp",
+    "observed_version": "1.14.5",
+    "delivery": "adapter-and-guarded-patch",
+    "note": "로컬 공유 연결 코드 및 패널 수정 제공. 앱과 CEP/UXP 패널 설치는 별도."
+  },
+  {
+    "name": "After Effects MCP",
+    "group": "adobe",
+    "source": "https://github.com/JUNKDOGE-JOE/after-effects-mcp",
+    "observed_version": "0.10.6",
+    "delivery": "registration-helper",
+    "note": "원본 설치 지침을 따라 패널 설치 후 stdio-shim.js 경로를 등록."
+  },
+  {
+    "name": "Photoshop Full MCP",
+    "group": "adobe",
+    "source": "https://github.com/muhwagwa0112/photoshop-full-mcp",
+    "observed_version": "2.0.1",
+    "delivery": "registration-helper-and-guarded-patch",
+    "note": "UXP HMAC 호환 및 폴더 선택 취소 수정. CCX와 계정/페어링은 포함하지 않음."
+  },
+  {
+    "name": "FFmpeg / ffprobe",
+    "group": "adobe",
+    "source": "https://ffmpeg.org/download.html",
+    "observed_version": "9.0",
+    "delivery": "upstream-install",
+    "commands": [
+      "ffmpeg -version",
+      "ffprobe -version"
+    ]
+  },
+  {
+    "name": "Taste design skills",
+    "group": "design",
+    "source": "https://github.com/Leonxlnx/taste-skill",
+    "delivery": "upstream-reference",
+    "skills": [
+      "brandkit",
+      "design-taste-frontend",
+      "design-taste-frontend-v1",
+      "full-output-enforcement",
+      "gpt-taste",
+      "high-end-visual-design",
+      "image-to-code",
+      "imagegen-frontend-mobile",
+      "imagegen-frontend-web",
+      "industrial-brutalist-ui",
+      "minimalist-ui",
+      "redesign-existing-projects",
+      "stitch-design-taste"
+    ],
+    "note": "기존 skills-lock에서 출처 확인. 전체를 기본 활성화하지 말고 작업에 맞는 스킬 선택."
+  },
+  {
+    "name": "OpenAI skill collection",
+    "group": "design",
+    "source": "https://github.com/openai/skills",
+    "delivery": "upstream-reference",
+    "skills": [
+      "screenshot",
+      "playwright-interactive",
+      "figma"
+    ],
+    "note": "Codex 번들/큐레이션 스킬은 계정·버전에 따라 달라지며 캐시를 복사하지 않음."
+  },
+  {
+    "name": "GSD workflow family",
+    "group": "development",
+    "source": "https://github.com/gsd-build/get-shit-done",
+    "delivery": "upstream-reference",
+    "note": "계획·실행·검증 계열 스킬 설치를 확인. 이 저장소의 설치기가 자동 설치하지 않음."
+  },
+  {
+    "name": "Graphify",
+    "group": "development",
+    "source": "https://pypi.org/project/graphifyy/",
+    "delivery": "upstream-reference",
+    "note": "지식 그래프 도구 설치 기록 확인. /graphify 요청 시 원본 스킬을 먼저 읽는 규칙을 사용."
+  },
+  {
+    "name": "Ponytail",
+    "group": "development",
+    "source": "https://github.com/DietrichGebert/ponytail",
+    "delivery": "upstream-reference",
+    "note": "과도한 구현을 줄이는 검토 플러그인. 설치된 캐시 및 개인 설정을 재배포하지 않음."
+  }
+]

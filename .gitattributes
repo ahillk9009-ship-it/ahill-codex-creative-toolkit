@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.ps1 text eol=lf
+# Patch payload checksums depend on these exact UTF-8 bytes.
+adobe/patches/** -text
+adobe/patches/*/patch.json text eol=lf
+adobe/premiere/package-lock.json text eol=lf

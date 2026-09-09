@@ -1,0 +1,10 @@
+{
+  "name": "ahill-premiere-shared-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=20.19.0" },
+  "dependencies": { "premiere-pro-mcp": "1.14.5" },
+  "scripts": { "test": "node --test *.test.mjs ../tests/*.test.cjs" }
+}

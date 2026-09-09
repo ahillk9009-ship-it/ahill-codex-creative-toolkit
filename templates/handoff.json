@@ -1,0 +1,16 @@
+{
+  "project_slug": null,
+  "source_app": null,
+  "destination_app": null,
+  "width": null,
+  "height": null,
+  "fps": { "numerator": null, "denominator": null },
+  "duration_seconds": null,
+  "color_space": null,
+  "alpha_required": null,
+  "audio_sample_rate": null,
+  "editable_master": null,
+  "review_export": null,
+  "source_references": [],
+  "verification": { "metadata": false, "visual": false, "audio_listened": false }
+}

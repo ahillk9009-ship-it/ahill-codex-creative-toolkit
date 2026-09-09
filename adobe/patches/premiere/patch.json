@@ -1,0 +1,21 @@
+{
+  "component": "premiere",
+  "version": "1.14.5",
+  "files": [
+    {
+      "path": "index.cjs",
+      "before_sha256": "44441bdee1997df07b80c9945885ecf0a44b4de40675a1b1868de980938ee0ee",
+      "after_sha256": "33eb3b05ea47191320aa5b57a1554708147975fc9b57e291659208dd718b15f4"
+    },
+    {
+      "path": "index.html",
+      "before_sha256": "2af13d6bd1bca4985e46eaaab5fade8f356a55c30fafcd428f0470ba57a54b3b",
+      "after_sha256": "a264aa08b982893fbf65ee5713e71a06a82ab1ce0f2ade54d53d05f1e1e0dde4"
+    },
+    {
+      "path": "connection-settings.cjs",
+      "before_sha256": null,
+      "after_sha256": "1a0675188fe484b58e7756c1d6d167b66782d8df56c81d13ecef47395310a964"
+    }
+  ]
+}
