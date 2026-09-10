@@ -4,6 +4,12 @@ import { WebSocket, WebSocketServer, UxpWebSocketBridge, UxpBridgeError } from '
 
 const CLIENT_PATH = '/mcp-uxp-v1';
 const MAX_TIMEOUT = 600_000;
+// Only known observation/wait commands bypass the mutation queue. Unknown
+// commands remain serialized, even if their names sound read-only.
+const OBSERVATION_COMMANDS = new Set([
+  'state.get', 'capabilities.get', 'events.list', 'events.wait',
+  'readiness.snapshot', 'readiness.analysis.wait', 'readiness.operation.wait'
+]);
 function send(socket, message) {
   if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(message));
 }
@@ -19,8 +25,12 @@ export class UxpHub extends UxpWebSocketBridge {
   queue = Promise.resolve();
   queued = 0;
   generation = 0;
+  observations = new Set();
+  activeMutation = null;
+  stopping = false;
   async start() {
     if (this.httpServer) return;
+    this.stopping = false;
     await super.start();
     this.clientServer = new WebSocketServer({ noServer: true, maxPayload: 1_048_576 });
     const nativeUpgrade = this.httpServer.listeners('upgrade')[0];
@@ -54,6 +64,61 @@ export class UxpHub extends UxpWebSocketBridge {
     this.heartbeat.unref();
   }
   broadcast(message) { for (const client of this.clients) send(client, { version: 1, ...message }); }
+  getState() {
+    return { ...super.getState(), recoveryRequired: this.activeMutation?.uncertain === true };
+  }
+  handleMessage(client, raw) {
+    if (client !== this.socket) return;
+    // The pinned upstream bridge forgets timed-out requests. Retain our own
+    // fence until a terminal result for that exact dispatch/socket is received.
+    let message;
+    try { message = JSON.parse(raw); } catch { /* upstream closes invalid JSON */ }
+    const active = this.activeMutation;
+    const terminal = active?.hostId && active.socket === client &&
+      message?.protocolVersion === this.hello?.protocolVersion &&
+      message?.type === 'result' && message.requestId === active.hostId &&
+      typeof message.payload?.ok === 'boolean';
+    if (terminal) active.completed = true;
+    super.handleMessage(client, raw);
+    if (terminal && active.uncertain) {
+      this.activeMutation = null;
+      this.broadcast({ type: 'state', state: this.getState() });
+    }
+  }
+  async dispatchMutation(client, message) {
+    if (this.activeMutation) throw new UxpBridgeError('UXP_STATE_UNCERTAIN',
+      'Earlier edit has no confirmed completion. Inspect the host; edits remain blocked until its result arrives. If lost, close Premiere and restart this shared service.');
+    const active = { client, clientId: message.id, socket: this.socket, completed: false, uncertain: false };
+    this.activeMutation = active;
+    // v1.14.5 inserts the native request synchronously, before returning its
+    // promise. Capture that ID for cancellation and late-result correlation.
+    const before = new Set(this.pending.keys());
+    const response = super.request(message.command, message.args ?? {}, { minimumTimeoutMs: message.minimumTimeoutMs ?? 0 });
+    active.hostId = [...this.pending.keys()].find(id => !before.has(id));
+    try { return await response; }
+    catch (error) {
+      if (active.hostId && !active.completed) {
+        active.uncertain = true;
+        this.broadcast({ type: 'state', state: this.getState() });
+      }
+      throw error;
+    } finally {
+      if (!active.hostId || active.completed) this.activeMutation = null;
+    }
+  }
+  async cancelActive(client, requestId) {
+    const active = this.activeMutation;
+    if (!active || active.client !== client || typeof requestId !== 'string' ||
+        !active.hostId || ![active.clientId, active.hostId].includes(requestId))
+      throw new UxpBridgeError('UXP_CANCEL_FORBIDDEN', 'Only the originating connection may cancel its active request');
+    if (active.socket !== this.socket || !this.getState().connected)
+      throw new UxpBridgeError('UXP_CANCEL_UNAVAILABLE', 'The original panel connection is unavailable');
+    // Cancellation acceptance is not a terminal result and never clears a
+    // mutation fence. Forward the host's accepted/reason fields unchanged.
+    if (!active.cancellation) active.cancellation = super.request('operation.cancel', { requestId: active.hostId });
+    try { return await active.cancellation; }
+    finally { active.cancellation = null; }
+  }
   acceptMcp(client) {
     this.clients.add(client);
     client.alive = true;
@@ -68,6 +133,8 @@ export class UxpHub extends UxpWebSocketBridge {
       if (!message || message.version !== 1 || typeof message.id !== 'string' || message.id.length > 64) { client.close(1008); return; }
       if (message.type === 'cancel') {
         if (client.cancelled.size < 64) client.cancelled.add(message.id);
+        if (this.activeMutation?.client === client && this.activeMutation.clientId === message.id)
+          void this.cancelActive(client, message.id).catch(() => {});
         return;
       }
       if (message.type !== 'request' || typeof message.command !== 'string' || message.command.length > 200 ||
@@ -75,26 +142,40 @@ export class UxpHub extends UxpWebSocketBridge {
           (message.minimumTimeoutMs !== undefined && (!Number.isInteger(message.minimumTimeoutMs) || message.minimumTimeoutMs < 0 || message.minimumTimeoutMs > MAX_TIMEOUT))) {
         client.close(1008); return;
       }
-      if (this.queued >= 32) {
+      const control = message.command === 'operation.cancel';
+      if (this.queued >= (control ? 64 : 32)) {
         send(client, { version: 1, type: 'result', id: message.id, ok: false, error: { code: 'UXP_BUSY', message: 'UXP queue is full; command was not sent' } });
         return;
       }
       const generation = this.generation;
       this.queued++;
-      this.queue = this.queue.then(async () => {
+      const execute = async () => {
         try {
+          if (this.stopping) throw new UxpBridgeError('UXP_STOPPED', 'Shared service stopped before dispatch');
           if (client.readyState !== WebSocket.OPEN || client.cancelled.has(message.id) || Date.now() >= message.expiresAt)
             throw new UxpBridgeError('UXP_EXPIRED', 'Command expired before dispatch');
           if (generation !== this.generation) throw new UxpBridgeError('UXP_RECONNECTED', 'Panel connection changed before dispatch; command was not sent');
-          const result = await super.request(message.command, message.args ?? {}, { minimumTimeoutMs: message.minimumTimeoutMs ?? 0 });
+          const result = control
+            ? await this.cancelActive(client, message.args?.requestId)
+            : OBSERVATION_COMMANDS.has(message.command)
+              ? await super.request(message.command, message.args ?? {}, { minimumTimeoutMs: message.minimumTimeoutMs ?? 0 })
+              : await this.dispatchMutation(client, message);
           send(client, { version: 1, type: 'result', id: message.id, ok: true, result });
         } catch (error) {
           send(client, { version: 1, type: 'result', id: message.id, ok: false, error: { code: error.code ?? 'UXP_COMMAND_FAILED', message: error.message } });
         } finally { this.queued--; client.cancelled.delete(message.id); }
-      });
+      };
+      if (control || OBSERVATION_COMMANDS.has(message.command)) {
+        const operation = execute();
+        this.observations.add(operation);
+        void operation.finally(() => this.observations.delete(operation));
+      } else {
+        this.queue = this.queue.then(execute);
+      }
     });
   }
   async stop() {
+    this.stopping = true;
     clearInterval(this.heartbeat);
     if (this.updateClients) {
       this.off('connected', this.updateClients);
@@ -106,6 +187,7 @@ export class UxpHub extends UxpWebSocketBridge {
     this.clientServer?.close();
     await super.stop();
     await this.queue;
+    await Promise.allSettled([...this.observations]);
   }
 }
 

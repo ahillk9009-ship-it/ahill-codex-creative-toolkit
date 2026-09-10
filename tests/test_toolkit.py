@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -39,6 +40,30 @@ class ToolkitTests(unittest.TestCase):
         self.assertFalse(target.exists())
         self.assertFalse(skills.exists())
 
+    def test_installed_cli_uses_its_custom_directory_for_doctor_and_registration(self):
+        target = self.base / "custom installation"
+        toolkit.install(target, self.base / "skills", "adobe")
+        toolkit.atomic_write(target / "adobe/premiere/node_modules/premiere-pro-mcp/package.json", '{"version":"1.14.5"}')
+        env = dict(os.environ, CODEX_HOME=str(self.base / "other-codex"))
+        def run(*args):
+            result = subprocess.run([sys.executable, str(target / "toolkit.py"), *args],
+                                    env=env, capture_output=True, text=True, encoding="utf-8")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            return json.loads(result.stdout)
+        checks = {row["component"]: row["status"] for row in run("doctor")["checks"]}
+        self.assertEqual(checks["toolkit"], "found")
+        self.assertTrue(run("mcp", "premiere", "--dry-run")["dry_run"])
+        override = {row["component"]: row["status"] for row in run("doctor", "--target", str(self.base / "absent"))["checks"]}
+        self.assertEqual(override["toolkit"], "missing")
+        self.assertFalse((self.base / "other-codex").exists())
+
+    def test_source_checkout_does_not_trust_a_foreign_installation_marker(self):
+        source = self.base / "source"
+        source.mkdir()
+        toolkit.atomic_write(source / "installation.json", toolkit.encode({"product": "different-product", "target": str(source)}))
+        with patch.object(toolkit, "ROOT", source), patch.dict(os.environ, {"CODEX_HOME": str(self.base / "codex")}):
+            self.assertEqual(toolkit.default_target(), self.base / "codex/tooling/ahill-toolkit")
+
     def test_user_skill_conflict_prevents_entire_install(self):
         skills = self.base / "skills"
         existing = skills / "ahill-work-memory/SKILL.md"
@@ -54,6 +79,43 @@ class ToolkitTests(unittest.TestCase):
         toolkit.atomic_write(target / "important.txt", "keep")
         with self.assertRaisesRegex(ValueError, "empty directory"):
             toolkit.install(target, self.base / "skills", "core")
+
+    def test_interrupted_install_resumes_without_deleting_files(self):
+        target, skills = self.base / "target", self.base / "skills"
+        original_write = toolkit.atomic_write
+        calls = 0
+        def interrupted(path, data):
+            nonlocal calls
+            calls += 1
+            if calls == 4:
+                raise OSError("simulated write interruption")
+            original_write(path, data)
+        with patch.object(toolkit, "atomic_write", side_effect=interrupted):
+            with self.assertRaises(OSError):
+                toolkit.install(target, skills, "full")
+        self.assertEqual(json.loads((target / "installation.json").read_text())["state"], "installing")
+        toolkit.install(target, skills, "full")
+        self.assertEqual(json.loads((target / "installation.json").read_text())["state"], "complete")
+        self.assertEqual(toolkit.install(target, skills, "full")["changed"], 0)
+
+    def test_interrupted_install_still_preserves_user_edits(self):
+        target, skills = self.base / "target", self.base / "skills"
+        original_write = toolkit.atomic_write
+        calls = 0
+        def interrupted(path, data):
+            nonlocal calls
+            calls += 1
+            if calls == 4:
+                raise OSError("simulated interruption")
+            original_write(path, data)
+        with patch.object(toolkit, "atomic_write", side_effect=interrupted):
+            with self.assertRaises(OSError):
+                toolkit.install(target, skills, "full")
+        first = next(p for p in target.rglob("*") if p.is_file() and p.name != "installation.json")
+        first.write_bytes(b"user edit after interruption")
+        with self.assertRaisesRegex(ValueError, "User-edited"):
+            toolkit.install(target, skills, "full")
+        self.assertEqual(first.read_bytes(), b"user edit after interruption")
 
     def test_reinstall_preserves_user_edits_and_previous_profiles(self):
         target, skills = self.base / "target", self.base / "skills"
@@ -127,6 +189,25 @@ class ToolkitTests(unittest.TestCase):
             for entry in data["files"]:
                 payload = (bundle / "files" / entry["path"]).read_bytes()
                 self.assertEqual(toolkit.sha(payload), entry["after_sha256"], entry["path"])
+
+    def test_invalid_private_settings_are_rejected_before_registration(self):
+        target = self.base / "runtime"
+        toolkit.atomic_write(target / "adobe/premiere/launcher.mjs", "// fixture")
+        toolkit.atomic_write(target / "adobe/premiere/node_modules/premiere-pro-mcp/package.json", '{"version":"1.14.5"}')
+        settings = target / "private/premiere.json"
+        config = self.base / "config.toml"
+        args = SimpleNamespace(target=target, kind="premiere", port=7788, config=config, dry_run=False)
+        bad = [{"port":7788,"token":"z"*32}, {"port":7788,"token":"z"*64},
+               {"port":7788,"token":"A"*64}, {"port":7788,"token":None},
+               {"port":True,"token":"a"*64}, {"port":7788.0,"token":"a"*64}, []]
+        for values in bad:
+            original = toolkit.encode(values)
+            toolkit.atomic_write(settings, original)
+            with patch.object(toolkit.shutil, "which", return_value="node"):
+                with self.assertRaises(ValueError):
+                    toolkit.register_mcp(args)
+            self.assertFalse(config.exists())
+            self.assertEqual(settings.read_text(), original)
 
     def bundle(self):
         bundle = self.base / "bundle"

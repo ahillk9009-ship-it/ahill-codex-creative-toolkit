@@ -7,7 +7,8 @@
 The default mode uses only Python's standard library. It provides keyword search, project scoping, correction history, JSON export and SQLite backups without API keys or model downloads.
 
 ```powershell
-$toolkitRoot = Join-Path $HOME '.codex/tooling/ahill-toolkit'
+$codexRoot = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME '.codex' }
+$toolkitRoot = Join-Path $codexRoot 'tooling/ahill-toolkit'
 python "$toolkitRoot/memory/memory.py" save --project demo --key subtitle --text "Use yellow captions" --source "Verified decision and date"
 python "$toolkitRoot/memory/memory.py" search "captions" --project demo
 python "$toolkitRoot/memory/memory.py" list --project demo
@@ -33,7 +34,8 @@ This mode uses Mem0, FastEmbed and embedded Qdrant. Facts are curated by the use
 Prepare a Python 3.12 environment with internet access:
 
 ```powershell
-$toolkitRoot = Join-Path $HOME '.codex/tooling/ahill-toolkit'
+$codexRoot = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME '.codex' }
+$toolkitRoot = Join-Path $codexRoot 'tooling/ahill-toolkit'
 py -3.12 -m venv "$toolkitRoot/memory/.venv"
 $memoryPython = Join-Path $toolkitRoot 'memory/.venv/Scripts/python.exe'
 & $memoryPython -m pip install -r "$toolkitRoot/memory/requirements-semantic.txt"

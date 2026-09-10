@@ -10,8 +10,9 @@ Upstream: [premiere-pro-mcp](https://github.com/leancoderkavy/premiere-pro-mcp).
 The adapter uses internal APIs from **MCP package 1.14.5** and pins that version. This is not the Adobe application's version number.
 
 ```powershell
-$toolkitRoot = Join-Path $HOME '.codex/tooling/ahill-toolkit'
-python toolkit.py install --profile adobe
+$codexRoot = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME '.codex' }
+$toolkitRoot = Join-Path $codexRoot 'tooling/ahill-toolkit' # Replace with your custom path if needed
+python toolkit.py install --profile adobe --target "$toolkitRoot"
 npm ci --prefix "$toolkitRoot/adobe/premiere" --ignore-scripts --no-audit --no-fund
 ```
 
@@ -21,7 +22,7 @@ Follow the upstream instructions to install compatible Premiere and CEP/UXP pane
 $pluginRoot = Join-Path $toolkitRoot 'adobe/premiere/node_modules/premiere-pro-mcp/uxp-plugin'
 python "$toolkitRoot/toolkit.py" patch premiere --plugin-dir "$pluginRoot" --dry-run
 python "$toolkitRoot/toolkit.py" patch premiere --plugin-dir "$pluginRoot"
-python "$toolkitRoot/toolkit.py" mcp premiere
+python "$toolkitRoot/toolkit.py" mcp premiere --target "$toolkitRoot"
 ```
 
 In Adobe UXP Developer Tools, register and load the **patched `$pluginRoot/manifest.json`**. If you use a panel installed elsewhere, patch the directory you actually load. Unsupported versions or locally changed files are not overwritten.
@@ -39,9 +40,26 @@ For another port, pass `--port 17788` during initial registration and update the
 
 ### Shared-connection behavior
 
-One authenticated loopback service owns the panel connection. It serializes commands from multiple MCP clients, reconnects after connection loss and never automatically replays interrupted mutations.
+One authenticated loopback service owns the panel connection. It serializes edits while explicitly allowlisted state/capability queries and event/readiness waits run independently. Unknown commands remain serialized. The service reconnects after connection loss and never automatically replays interrupted mutations.
 
 Multi-command edits are not atomic transactions. Coordinate tasks editing the same sequence. After a timeout, inspect current state before retrying: the command may already have executed.
+
+### Timeouts and cancellation (v0.1.2)
+
+When an edit is dispatched but completion is unknown after a timeout or disconnect, later edits fail with `UXP_STATE_UNCERTAIN`. Observations and waits remain available. Failed/rejected edits are never automatically replayed; unknown commands receive the same protection as edits.
+
+A late terminal result for the exact request on the same panel connection releases the fence. Reconnecting, receiving an unrelated result, or accepting a cancellation request does not. If the result is lost, inspect the actual project and saved state, fully close Premiere, then stop/restart the `service.mjs` process belonging to this installation. If identifying that process is difficult, save all work and restart Windows. Do not restart only the service to bypass the fence while a host operation could still be running.
+
+`operation.cancel` bypasses the edit queue, but only the same originating MCP connection can cancel its request. Other connections receive `UXP_CANCEL_FORBIDDEN`. Cancellation acceptance still requires a terminal result from the original operation. If Premiere has crossed a non-cancellable host boundary, the original response such as `host_call_not_cancellable` is preserved; forced interruption is not promised. This adapter does not add a separate Codex cancel button.
+
+To check the connection and recovery state without editing:
+
+```powershell
+$env:AHILL_PREMIERE_SETTINGS = Join-Path $toolkitRoot 'private/premiere.json'
+node "$toolkitRoot/adobe/premiere/launcher.mjs" --check
+```
+
+`recoveryRequired: true` means edits remain fenced even if state queries succeed; the command exits with code 1. If no service is listening, this check can start the shared service for this installation. Restart an existing service after an update so it loads the new code.
 
 ## After Effects
 

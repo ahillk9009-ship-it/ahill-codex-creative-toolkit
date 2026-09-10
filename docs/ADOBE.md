@@ -10,8 +10,9 @@
 이 저장소의 어댑터는 **MCP 패키지 1.14.5**의 내부 API를 사용하므로 버전을 고정했습니다. Adobe 앱 버전 번호와 다릅니다.
 
 ```powershell
-$toolkitRoot = Join-Path $HOME '.codex/tooling/ahill-toolkit'
-python toolkit.py install --profile adobe
+$codexRoot = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME '.codex' }
+$toolkitRoot = Join-Path $codexRoot 'tooling/ahill-toolkit' # 사용자 지정 경로이면 변경
+python toolkit.py install --profile adobe --target "$toolkitRoot"
 npm ci --prefix "$toolkitRoot/adobe/premiere" --ignore-scripts --no-audit --no-fund
 ```
 
@@ -22,7 +23,7 @@ npm ci --prefix "$toolkitRoot/adobe/premiere" --ignore-scripts --no-audit --no-f
 $pluginRoot = Join-Path $toolkitRoot 'adobe/premiere/node_modules/premiere-pro-mcp/uxp-plugin'
 python "$toolkitRoot/toolkit.py" patch premiere --plugin-dir "$pluginRoot" --dry-run
 python "$toolkitRoot/toolkit.py" patch premiere --plugin-dir "$pluginRoot"
-python "$toolkitRoot/toolkit.py" mcp premiere
+python "$toolkitRoot/toolkit.py" mcp premiere --target "$toolkitRoot"
 ```
 
 Adobe UXP Developer Tools에서 **수정한 `$pluginRoot/manifest.json`**을 등록·로드합니다. 다른 경로에 설치된 패널을 사용하는 경우에는 실제 로드하는 경로에 패치를 적용해야 합니다. 이미 수정했거나 다른 버전인 파일은 자동으로 덮어쓰지 않습니다.
@@ -40,9 +41,26 @@ MCP 등록은 `ahill_premiere` 항목을 추가합니다. 기존 `premiere-pro` 
 
 ### 공유 연결이 해결하는 것
 
-MCP 프로세스마다 패널 포트를 따로 차지하던 문제를 하나의 인증된 loopback 서비스로 해결합니다. 여러 작업의 명령을 순서대로 전달하고, 끊어진 연결은 다시 연결합니다. 중간에 끊긴 편집 명령을 자동 재실행하지 않습니다.
+MCP 프로세스마다 패널 포트를 따로 차지하던 문제를 하나의 인증된 loopback 서비스로 해결합니다. 편집 명령은 순서대로 전달하고, 명시적으로 허용한 상태·기능 조회와 이벤트·준비 완료 대기는 별도로 처리합니다. 알 수 없는 명령은 계속 순서대로 처리합니다. 끊어진 연결은 다시 연결하며, 중간에 끊긴 편집 명령을 자동 재실행하지 않습니다.
 
 다만 여러 명령으로 구성된 편집 작업 전체가 하나의 트랜잭션이 되지는 않습니다. 여러 작업이 같은 시퀀스를 동시에 편집한다면 담당 범위를 나누어야 합니다. 타임아웃이 났더라도 명령이 이미 반영됐을 수 있으므로 현재 상태를 먼저 조회하세요.
+
+### 타임아웃과 취소 (v0.1.2)
+
+편집 명령을 보낸 뒤 응답이 타임아웃되거나 연결이 끊겨 완료 여부를 알 수 없으면 후속 편집은 `UXP_STATE_UNCERTAIN`으로 거부됩니다. 상태 조회·이벤트 대기는 계속 사용할 수 있으며, 실패하거나 거부된 편집을 자동으로 다시 실행하지 않습니다. 알 수 없는 명령도 편집 큐와 같은 보호를 받습니다.
+
+동일 패널 연결에서 해당 요청의 확정된 결과가 늦게 도착하면 차단이 해제됩니다. 단순 재접속, 다른 요청의 결과, 취소 접수 응답만으로는 해제되지 않습니다. 결과가 유실됐다면 먼저 Premiere의 실제 상태와 저장 여부를 확인하고, Premiere를 완전히 종료한 다음 이 설치 경로의 `service.mjs` 프로세스를 종료·재시작하세요. 서비스 식별이 어렵다면 모든 작업을 저장한 뒤 Windows를 재시작할 수 있습니다. 실제 호스트 작업이 남아 있는 상태에서 서비스만 재시작해 차단을 우회하지 마세요.
+
+`operation.cancel`은 일반 편집 큐를 기다리지 않지만, 대상 요청을 시작한 동일 MCP 연결만 보낼 수 있습니다. 다른 연결의 요청은 `UXP_CANCEL_FORBIDDEN`으로 거부됩니다. 호스트가 취소를 접수해도 원래 작업의 종료 응답을 기다립니다. Premiere가 이미 취소 불가능한 호스트 호출에 들어갔다면 `host_call_not_cancellable` 등의 원래 사유를 반환하며 강제 중단을 약속하지 않습니다. 이 어댑터는 별도의 Codex 취소 버튼을 추가하지 않습니다.
+
+현재 연결·복구 상태를 읽기 전용으로 확인하려면:
+
+```powershell
+$env:AHILL_PREMIERE_SETTINGS = Join-Path $toolkitRoot 'private/premiere.json'
+node "$toolkitRoot/adobe/premiere/launcher.mjs" --check
+```
+
+`recoveryRequired: true`이면 상태 조회가 성공해도 편집 차단이 남아 있다는 뜻이며 종료 코드는 1입니다. 기존 연결이 없으면 이 명령은 해당 설치의 공유 서비스를 시작할 수 있습니다. 업데이트 후에는 기존 서비스가 새 코드를 읽도록 재시작해야 합니다.
 
 ## After Effects
 

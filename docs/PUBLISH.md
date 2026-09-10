@@ -27,7 +27,7 @@ git clone <YOUR_REPOSITORY_URL> ahill-repo
 cd ahill-repo
 python toolkit.py check-release
 git status --short
-git add README.md README.en.md LICENSE THIRD_PARTY_NOTICES.md toolkit.py setup.ps1 release-files.json .gitignore .gitattributes .github adobe memory skills templates catalog docs tests licenses
+git add CHANGELOG.md README.md README.en.md LICENSE THIRD_PARTY_NOTICES.md toolkit.py setup.ps1 release-files.json .gitignore .gitattributes .github adobe memory skills templates catalog docs tests licenses
 git diff --cached --stat
 git commit -m "Add portable Codex creative toolkit"
 git push

@@ -4,6 +4,17 @@
 
 This guide distinguishes reproducible package checks from checks that require actual Adobe applications.
 
+## Version 0.1.2 checks (2026-09-10)
+
+On Windows, 28 Python and 22 Node tests passed. In addition to the supplied 0.1.1 installer recovery, observation separation and token validation fixes, regression coverage checks:
+
+- Queued edits are rejected after an unconfirmed timeout, and new edits resume only after the exact late terminal result.
+- Reconnecting, unrelated results and cancellation acceptance cannot release an uncertain edit fence.
+- The originating connection's cancellation bypasses the edit queue; another connection's cancellation is rejected.
+- An installed CLI follows its custom directory despite a different CODEX_HOME, while explicit target overrides remain effective.
+
+The core regression cases failed against the old implementation and passed after the fixes. Node tests use simulated panels, temporary ports and shortened timeouts. They do not establish actual Adobe editing/saving/rendering or project integrity during service failures. Restarting a process does not prove host completion; follow the [recovery procedure](ADOBE.md#timeouts-and-cancellation-v012).
+
 ## Recorded package checks
 
 The following were verified in temporary Windows work directories on 2026-09-09:

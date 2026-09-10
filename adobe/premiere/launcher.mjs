@@ -12,7 +12,8 @@ if (process.argv.includes('--check')) {
   try {
     for (let i = 0; i < 20 && !bridge.getState().connected; i++) await delay(500);
     const state = bridge.getState();
-    const report = { connected: state.connected, status: state.status, port: bridge.address().port };
+    const report = { connected: state.connected, status: state.status, port: bridge.address().port,
+      recoveryRequired: state.recoveryRequired === true };
     if (state.connected) {
       const hostState = await bridge.request('state.get');
       report.hostRoundTrip = true;
@@ -20,7 +21,7 @@ if (process.argv.includes('--check')) {
       report.sequenceOpen = hostState.sequenceOpen === true;
     }
     console.log(JSON.stringify(report));
-    if (!report.hostRoundTrip) process.exitCode = 1;
+    if (!report.hostRoundTrip || report.recoveryRequired) process.exitCode = 1;
   } finally { await bridge.stop(); }
 } else {
   const { serveStdio } = await import(pathToFileURL(requireRuntime.resolve('@modelcontextprotocol/server/stdio')).href);

@@ -8,13 +8,15 @@ This toolkit packages a personal Windows video and design workflow so others can
 
 > Korean and English guides · Windows first · Python 3.11+ · No API key needed for core features
 
+**v0.1.2:** Adds interrupted-install recovery, installed-path detection, independent Premiere observation/wait requests and owner-checked cancellation. Timed-out edits block later edits until their completion is confirmed. [Changelog](CHANGELOG.md) · [Update an existing installation](docs/en/QUICKSTART.md#update-an-existing-installation)
+
 ## What's included
 
 | Component | What you get |
 |---|---|
 | Installer | Automatic path resolution, five skill profiles, repeatable installation and conflict detection |
 | Project memory | SQLite/JSON storage, keyword search, correction history, backups and optional local Mem0 semantic search |
-| Premiere Pro | A shared UXP adapter for multiple MCP clients, reconnect handling and serialized commands |
+| Premiere Pro | Shared UXP connections, serialized edits, independent observations/waits and protection after uncertain edit completion |
 | Photoshop | Compatibility fixes for UXP cryptography APIs and folder-picker cancellation |
 | Adobe registration | Codex MCP configuration helpers for Premiere, After Effects and Photoshop, with config backups |
 | Four reusable skills | Project memory, research/browser verification, Adobe editing and creative handoffs |

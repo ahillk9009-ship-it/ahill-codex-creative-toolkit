@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 import zipfile
 
 ROOT = Path(__file__).resolve().parent
-VERSION = "0.1.0"
+VERSION = "0.1.2"
 PROFILES = {
     "core": ["ahill-work-memory"],
     "research": ["ahill-work-memory", "ahill-research-browser"],
@@ -64,6 +64,17 @@ def safe_child(root, relative):
 
 
 def default_target():
+    # An installed launcher follows its own verified installation, even when
+    # CODEX_HOME now points elsewhere. A checkout without this marker uses home.
+    try:
+        installed = json.loads((ROOT / "installation.json").read_text(encoding="utf-8"))
+        if (installed.get("product") == "ahill-codex-creative-toolkit"
+                and installed.get("state", "complete") == "complete"
+                and isinstance(installed.get("target"), str)
+                and Path(installed["target"]).resolve() == ROOT):
+            return ROOT
+    except (OSError, ValueError, AttributeError):
+        pass
     codex = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
     return codex / "tooling" / "ahill-toolkit"
 
@@ -82,7 +93,7 @@ def install(target, skills_home, profile, dry_run=False):
     if target.exists() and any(target.iterdir()) and not marker.exists():
         raise ValueError("Target is not an Ahill installation; choose an empty directory")
     old = json.loads(marker.read_text(encoding="utf-8")) if marker.exists() else {}
-    if old and old.get("product") != "ahill-codex-creative-toolkit":
+    if marker.exists() and old.get("product") != "ahill-codex-creative-toolkit":
         raise ValueError("Unrecognized installation marker")
     # Update only files still matching our previous installation, or already
     # matching the new release. Plan every write before touching any destination.
@@ -97,10 +108,14 @@ def install(target, skills_home, profile, dry_run=False):
         text = text.replace("{{TOOLKIT_ROOT}}", target.as_posix())
         files[skills_home / name / "SKILL.md"] = text.encode("utf-8")
     conflicts = []
+    observed_hashes = {}
     for destination, data in files.items():
         if destination.exists():
             current_hash = sha(destination.read_bytes())
-            if current_hash != sha(data) and old.get("hashes", {}).get(str(destination)) != current_hash:
+            observed_hashes[str(destination)] = current_hash
+            owned_hashes = {old.get("hashes", {}).get(str(destination)),
+                            old.get("pending_hashes", {}).get(str(destination))}
+            if current_hash != sha(data) and current_hash not in owned_hashes:
                 conflicts.append(str(destination))
     if conflicts:
         raise ValueError("User-edited files would be overwritten: " + ", ".join(conflicts))
@@ -109,12 +124,20 @@ def install(target, skills_home, profile, dry_run=False):
             "skills": selected, "file_count": len(files), "dry_run": dry_run}
     if dry_run:
         return plan
+    # Write a durable intent before the first payload file. An interrupted
+    # install remains identifiable and may resume without deleting the target.
+    # Both the previous and intended bytes are recognized during an interrupted
+    # upgrade; arbitrary edits still fail the preflight above.
+    hashes = {str(p): sha(data) for p, data in files.items()}
+    atomic_write(marker, encode(plan | {"state": "installing",
+                 "hashes": observed_hashes, "pending_hashes": hashes}))
     changed = 0
     for destination, data in files.items():
         if not destination.exists() or destination.read_bytes() != data:
             atomic_write(destination, data)
             changed += 1
-    plan["hashes"] = {str(p): sha(data) for p, data in files.items()}
+    plan["hashes"] = hashes
+    plan["state"] = "complete"
     atomic_write(marker, encode(plan))
     return {k: v for k, v in plan.items() if k != "hashes"} | {"changed": changed}
 
@@ -157,6 +180,16 @@ def merge_mcp(config, name, entry, dry_run=False):
     return {"changed": True, "server": name, "backup": str(backup) if backup else None}
 
 
+def validate_premiere_settings(values, expected_port):
+    if not isinstance(values, dict):
+        raise ValueError("Private Premiere settings must be a JSON object")
+    port, token = values.get("port"), values.get("token")
+    if type(port) is not int or not 1024 <= port <= 65535 or port != expected_port:
+        raise ValueError("Existing private port differs; preserve the panel pairing or edit explicitly")
+    if not isinstance(token, str) or not re.fullmatch(r"[a-f0-9]{64}", token):
+        raise ValueError("Invalid private Premiere token: expected exactly 64 lowercase hexadecimal characters; preserve the existing file and repair pairing explicitly")
+
+
 def register_mcp(args):
     target = args.target.resolve()
     node = shutil.which("node")
@@ -177,8 +210,7 @@ def register_mcp(args):
         settings = target / "private" / "premiere.json"
         if settings.exists():
             values = json.loads(settings.read_text(encoding="utf-8"))
-            if values.get("port") != args.port or len(values.get("token", "")) < 32:
-                raise ValueError("Existing private settings differ; preserve the panel pairing or edit explicitly")
+            validate_premiere_settings(values, args.port)
         entry = {"command": node, "args": [str(launcher)], "startup_timeout_sec": 30,
                  "env": {"AHILL_PREMIERE_SETTINGS": str(settings)}}
         preview = merge_mcp(args.config, "ahill_premiere", entry, dry_run=True)

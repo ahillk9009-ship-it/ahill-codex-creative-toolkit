@@ -84,7 +84,7 @@ test('serializes commands from different tasks and recovers when only the panel 
     await Promise.all(clients.map(c => c.start()));
     panel = await panelFor(hub, async cmd => { active++; maxActive = Math.max(maxActive, active); await delay(30); active--; return { echo: cmd.args }; });
     await until(() => clients.every(c => c.getState().connected));
-    const results = await Promise.all(clients.map((c, i) => c.request('state.get', { i })));
+    const results = await Promise.all(clients.map((c, i) => c.request('test.mutation', { i })));
     assert.equal(maxActive, 1);
     assert.deepEqual(results.map(r => r.echo.i), [0, 1, 2]);
     panel.terminate(); await until(() => clients.every(c => !c.getState().connected));
@@ -92,4 +92,43 @@ test('serializes commands from different tasks and recovers when only the panel 
     panel = await panelFor(hub); await until(() => clients.every(c => c.getState().connected));
     assert.deepEqual(await clients[2].request('state.get', { again: true }), { echo: { again: true } });
   } finally { panel?.terminate(); await Promise.all(clients.map(c => c.stop())); await hub.stop(); }
+});
+
+test('event waits do not block state queries or the mutation that completes the wait', {timeout: 5000}, async () => {
+  const hub = new UxpHub({ port: 0, token }); await hub.start();
+  const clients = [0, 1, 2].map(() => new SharedUxpClient({ port: hub.address().port, token }));
+  let panel, completeWait;
+  const order = [];
+  try {
+    await Promise.all(clients.map(c => c.start()));
+    panel = new WebSocket(`ws://127.0.0.1:${hub.address().port}/uxp?token=${token}`);
+    panel.on('message', async raw => {
+      const cmd = JSON.parse(raw);
+      order.push(cmd.command);
+      if (cmd.command === 'events.wait') await new Promise(resolve => { completeWait = resolve; });
+      if (cmd.command === 'test.mutation') completeWait();
+      if (panel.readyState === WebSocket.OPEN) panel.send(JSON.stringify({
+        protocolVersion: 2, type: 'result', requestId: cmd.requestId,
+        payload: { ok: true, result: { command: cmd.command } }
+      }));
+    });
+    await once(panel, 'open');
+    panel.send(JSON.stringify({ protocolVersion: 2, type: 'hello', payload: {
+      backend: 'uxp', protocolVersion: 2, commands: {
+        'events.wait': { supported: true }, 'state.get': { supported: true },
+        'test.mutation': { supported: true }
+      }
+    } }));
+    await until(() => clients.every(c => c.getState().connected));
+    const waiting = clients[0].request('events.wait').catch(error => { throw error; });
+    await until(() => completeWait);
+    const state = clients[1].request('state.get');
+    const mutation = clients[2].request('test.mutation');
+    await Promise.all([waiting, state, mutation]);
+    assert.deepEqual(order, ['events.wait', 'state.get', 'test.mutation']);
+    assert.equal(hub.queued, 0);
+  } finally {
+    completeWait?.(); panel?.terminate();
+    await Promise.all(clients.map(c => c.stop())); await hub.stop();
+  }
 });

@@ -7,7 +7,8 @@
 기본 모드는 Python 표준 라이브러리만 사용합니다. 키워드 검색, 프로젝트 구분, JSON 내보내기, 수정 이력, SQLite 백업이 작동합니다. API 키나 모델 다운로드가 필요하지 않습니다.
 
 ```powershell
-$toolkitRoot = Join-Path $HOME '.codex/tooling/ahill-toolkit'
+$codexRoot = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME '.codex' }
+$toolkitRoot = Join-Path $codexRoot 'tooling/ahill-toolkit'
 python "$toolkitRoot/memory/memory.py" save --project demo --key subtitle --text "자막은 노란색" --source "본인 결정과 날짜"
 python "$toolkitRoot/memory/memory.py" search "자막" --project demo
 python "$toolkitRoot/memory/memory.py" list --project demo
@@ -33,7 +34,8 @@ python "$toolkitRoot/memory/memory.py" export
 Python 3.12와 인터넷을 사용할 수 있는 환경에서 **본인이 실행하는 준비 단계**:
 
 ```powershell
-$toolkitRoot = Join-Path $HOME '.codex/tooling/ahill-toolkit'
+$codexRoot = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME '.codex' }
+$toolkitRoot = Join-Path $codexRoot 'tooling/ahill-toolkit'
 py -3.12 -m venv "$toolkitRoot/memory/.venv"
 $memoryPython = Join-Path $toolkitRoot 'memory/.venv/Scripts/python.exe'
 & $memoryPython -m pip install -r "$toolkitRoot/memory/requirements-semantic.txt"
